@@ -1,18 +1,41 @@
-print("Welcome to BullEye AI 🚀")
-print("Indian Stock Market AI Assistant")
-print("Developer: Sarthak Goswami")
 import yfinance as yf
+from indicators.rsi import calculate_rsi
+from indicators.ema import calculate_ema
+from indicators.macd import calculate_macd
+from strategies.signal import generate_signal
 
-print("📈 BullEye AI - Market Data Module")
+print("📈 BullEye AI - RSI + EMA Module")
 
-# NSE Stock Symbol
 stock = "RELIANCE.NS"
 
-# છેલ્લા 1 વર્ષનો data download કરો
 data = yf.download(stock, period="1y")
 
-print("\nFirst 5 Rows:\n")
-print(data.head())
+# MultiIndex columns હોય તો સરળ બનાવો
+if hasattr(data.columns, "nlevels") and data.columns.nlevels > 1:
+    data.columns = data.columns.get_level_values(0)
 
-print("\nLast 5 Rows:\n")
-print(data.tail())
+data["RSI"] = calculate_rsi(data)
+data["EMA20"] = calculate_ema(data)
+data["MACD"], data["MACD_Signal"], data["Histogram"] = calculate_macd(data)
+data["Signal"] = data.apply(
+    lambda row: generate_signal(
+        row["RSI"],
+        row["Close"],
+        row["EMA20"]
+    ),
+    axis=1
+)
+
+print(
+    data[
+        [
+            "Close",
+            "EMA20",
+            "RSI",
+            "MACD",
+            "MACD_Signal",
+            "Histogram",
+            "Signal"
+        ]
+    ].tail(10)
+)
