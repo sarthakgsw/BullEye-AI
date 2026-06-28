@@ -1,9 +1,16 @@
-def generate_signal(rsi, close, ema):
-    if rsi < 30 and close > ema:
+def generate_signal(score):
+
+    if score >= 85:
+        return "🟢 STRONG BUY"
+
+    elif score >= 70:
         return "🟢 BUY"
 
-    elif rsi > 70 and close < ema:
-        return "🔴 SELL"
+    elif score >= 50:
+        return "🟡 HOLD"
+
+    elif score >= 30:
+        return "🟠 WEAK"
 
     else:
-        return "🟡 HOLD"
+        return "🔴 SELL"
