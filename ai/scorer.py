@@ -1,4 +1,4 @@
-def calculate_score(rsi, close, ema, macd, macd_signal):
+def calculate_score(rsi, close, ema, macd, macd_signal, pattern):
 
     score = 0
 
@@ -19,6 +19,19 @@ def calculate_score(rsi, close, ema, macd, macd_signal):
     # Trend
     if close > ema and macd > macd_signal:
         score += 20
+
+    # Candlestick Pattern
+    if pattern == "🟢 Hammer":
+        score += 20
+
+    elif pattern == "🟢 Bullish Candle":
+        score += 10
+
+    elif pattern == "🔴 Shooting Star":
+        score -= 20
+
+    elif pattern == "🔴 Bearish Candle":
+        score -= 10
 
     return score
 
