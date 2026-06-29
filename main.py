@@ -5,6 +5,8 @@ from indicators.macd import calculate_macd
 from strategies.signal import generate_signal
 from ai.scorer import calculate_score, confidence
 from indicators.candlestick import detect_pattern
+from indicators.trend import detect_trend
+from indicators.support_resistance import support_resistance
 
 print("📈 BullEye AI - RSI + EMA Module")
 
@@ -21,7 +23,15 @@ if hasattr(data.columns, "nlevels") and data.columns.nlevels > 1:
 
 data["RSI"] = calculate_rsi(data)
 data["EMA20"] = calculate_ema(data)
+data["Trend"] = data.apply(
+    lambda row: detect_trend(
+        row["Close"],
+        row["EMA20"]
+    ),
+    axis=1
+)
 data["MACD"], data["MACD_Signal"], data["Histogram"] = calculate_macd(data)
+data["Support"], data["Resistance"] = support_resistance(data)
 pattern = detect_pattern(data)
 data["Score"] = data.apply(
     lambda row: calculate_score(
@@ -43,7 +53,10 @@ print(
     data[
         [
             "Close",
+            "Support",
+            "Resistance",
             "EMA20",
+            "Trend",
             "RSI",
             "MACD",
             "MACD_Signal",
