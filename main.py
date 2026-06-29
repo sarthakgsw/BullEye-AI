@@ -10,6 +10,7 @@ from indicators.support_resistance import support_resistance
 from analysis.volume import volume_analysis
 from analysis.risk import risk_management
 from analysis.backtest import backtest
+from indicators.atr import calculate_atr
 
 print("📈 BullEye AI - RSI + EMA Module")
 
@@ -26,6 +27,7 @@ if hasattr(data.columns, "nlevels") and data.columns.nlevels > 1:
 
 data["RSI"] = calculate_rsi(data)
 data["EMA20"] = calculate_ema(data)
+data["ATR"] = calculate_atr(data)
 data["Trend"] = data.apply(
     lambda row: detect_trend(
         row["Close"],
@@ -42,7 +44,7 @@ entry, stop_loss, target1, target2, rr = risk_management(
     data["Resistance"].iloc[-1]
 )
 pattern = detect_pattern(data)
-data["Score"] = data.apply(
+scores = data.apply(
     lambda row: calculate_score(
         row["RSI"],
         row["Close"],
@@ -53,6 +55,9 @@ data["Score"] = data.apply(
     ),
     axis=1
 )
+
+data["Score"] = scores.apply(lambda x: x[0])
+data["Reasons"] = scores.apply(lambda x: ", ".join(x[1]))
 data["AI_Confidence"] = data["Score"].apply(confidence)
 data["Signal"] = data["Score"].apply(generate_signal)
 total, win, loss, rate = backtest(data)
@@ -63,6 +68,7 @@ print(
     data[
         [
             "Close",
+            "ATR",
             "Support",
             "Resistance",
             "EMA20",
@@ -73,7 +79,8 @@ print(
             "Histogram",
             "Score",
             "AI_Confidence",
-            "Signal"
+            "Signal",
+            "Reasons"
         ]
     ].tail(10)
 )
