@@ -23,9 +23,22 @@ BullEye AI is an AI-powered Indian Stock Market Assistant designed to help trade
 - AI / Machine Learning
 - Stock Market APIs
 
-## Project Status
+## 📊 Project Status
 
-🚧 Version: 0.1 (Development Started)
+🚀 Current Version: 0.3
+
+### ✅ Completed
+- RSI Module
+- MACD Module
+- SMA & EMA
+- Bollinger Bands
+- Support & Resistance
+- AI Score Engine
+- AI Decision Engine
+- Position Sizing
+- Risk Management
+- Professional Console Output
+- Backtesting
 
 ## Developer
 
