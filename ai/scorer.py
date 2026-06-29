@@ -1,4 +1,4 @@
-def calculate_score(rsi, close, ema, macd, macd_signal, pattern):
+def calculate_score(rsi, close, ema, macd, macd_signal, volume_status):
 
     score = 0
 
@@ -20,17 +20,12 @@ def calculate_score(rsi, close, ema, macd, macd_signal, pattern):
     if close > ema and macd > macd_signal:
         score += 20
 
-    # Candlestick Pattern
-    if pattern == "🟢 Hammer":
-        score += 20
-
-    elif pattern == "🟢 Bullish Candle":
-        score += 10
-
-    elif pattern == "🔴 Shooting Star":
-        score -= 20
-
-    elif pattern == "🔴 Bearish Candle":
+    # Volume
+    if volume_status == "🟢 High Volume Breakout":
+        score += 15
+    elif volume_status == "🟡 Normal Volume":
+        score += 5
+    elif volume_status == "🔴 Weak Volume":
         score -= 10
 
     return score
@@ -40,15 +35,11 @@ def confidence(score):
 
     if score >= 85:
         return "🟢 STRONG BUY (95%)"
-
     elif score >= 70:
         return "🟢 BUY (80%)"
-
     elif score >= 50:
         return "🟡 HOLD (60%)"
-
     elif score >= 30:
         return "🟠 WEAK (40%)"
-
     else:
         return "🔴 SELL (20%)"

@@ -7,6 +7,7 @@ from ai.scorer import calculate_score, confidence
 from indicators.candlestick import detect_pattern
 from indicators.trend import detect_trend
 from indicators.support_resistance import support_resistance
+from analysis.volume import volume_analysis
 
 print("📈 BullEye AI - RSI + EMA Module")
 
@@ -31,6 +32,7 @@ data["Trend"] = data.apply(
     axis=1
 )
 data["MACD"], data["MACD_Signal"], data["Histogram"] = calculate_macd(data)
+current_volume, avg_volume, volume_status = volume_analysis(data)
 data["Support"], data["Resistance"] = support_resistance(data)
 pattern = detect_pattern(data)
 data["Score"] = data.apply(
@@ -40,7 +42,7 @@ data["Score"] = data.apply(
         row["EMA20"],
         row["MACD"],
         row["MACD_Signal"],
-        pattern
+        volume_status
     ),
     axis=1
 )
@@ -67,3 +69,10 @@ print(
         ]
     ].tail(10)
 )
+print("\n========== VOLUME ANALYSIS ==========\n")
+
+print(f"Current Volume : {int(current_volume):,}")
+
+print(f"20 Day Avg     : {int(avg_volume):,}")
+
+print(f"Status         : {volume_status}")
