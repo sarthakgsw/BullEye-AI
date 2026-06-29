@@ -11,6 +11,7 @@ from analysis.volume import volume_analysis
 from analysis.risk import risk_management
 from analysis.backtest import backtest
 from indicators.atr import calculate_atr
+from ai.decision import ai_decision
 
 print("📈 BullEye AI - RSI + EMA Module")
 
@@ -60,6 +61,13 @@ data["Score"] = scores.apply(lambda x: x[0])
 data["Reasons"] = scores.apply(lambda x: ", ".join(x[1]))
 data["AI_Confidence"] = data["Score"].apply(confidence)
 data["Signal"] = data["Score"].apply(generate_signal)
+# Final AI Decision
+verdict, strength, recommendation = ai_decision(
+    data["Score"].iloc[-1],
+    data["Trend"].iloc[-1],
+    volume_status,
+    data["ATR"].iloc[-1]
+)
 total, win, loss, rate = backtest(data)
 
 print("\nCandlestick Pattern :", pattern)
@@ -111,3 +119,22 @@ print(f"Winning Trades : {win}")
 print(f"Losing Trades  : {loss}")
 
 print(f"Win Rate       : {rate}%")
+print("\n========== AI DECISION ==========\n")
+
+print(f"Final Verdict : {verdict}")
+print(f"Strength      : {strength}")
+
+print("\nTrade Plan")
+print("-" * 35)
+print(f"Entry Price : ₹{entry:.2f}")
+print(f"Stop Loss  : ₹{stop_loss:.2f}")
+print(f"Target 1   : ₹{target1:.2f}")
+print(f"Target 2   : ₹{target2:.2f}")
+
+print("\nRecommendation")
+print("-" * 35)
+print(recommendation)
+
+overall_rating = round(data["Score"].iloc[-1] / 10, 1)
+
+print(f"\nOverall Rating : {overall_rating} / 10")
