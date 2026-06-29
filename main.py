@@ -8,6 +8,7 @@ from indicators.candlestick import detect_pattern
 from indicators.trend import detect_trend
 from indicators.support_resistance import support_resistance
 from analysis.volume import volume_analysis
+from analysis.risk import risk_management
 
 print("📈 BullEye AI - RSI + EMA Module")
 
@@ -34,6 +35,11 @@ data["Trend"] = data.apply(
 data["MACD"], data["MACD_Signal"], data["Histogram"] = calculate_macd(data)
 current_volume, avg_volume, volume_status = volume_analysis(data)
 data["Support"], data["Resistance"] = support_resistance(data)
+entry, stop_loss, target1, target2, rr = risk_management(
+    data["Close"].iloc[-1],
+    data["Support"].iloc[-1],
+    data["Resistance"].iloc[-1]
+)
 pattern = detect_pattern(data)
 data["Score"] = data.apply(
     lambda row: calculate_score(
@@ -76,3 +82,14 @@ print(f"Current Volume : {int(current_volume):,}")
 print(f"20 Day Avg     : {int(avg_volume):,}")
 
 print(f"Status         : {volume_status}")
+print("\n========== RISK MANAGEMENT ==========\n")
+
+print(f"Entry Price : ₹{entry:.2f}")
+
+print(f"Stop Loss  : ₹{stop_loss:.2f}")
+
+print(f"Target 1   : ₹{target1:.2f}")
+
+print(f"Target 2   : ₹{target2:.2f}")
+
+print(f"Risk/Reward: 1 : {rr}")
