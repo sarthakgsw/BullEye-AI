@@ -9,6 +9,7 @@ from indicators.trend import detect_trend
 from indicators.support_resistance import support_resistance
 from analysis.volume import volume_analysis
 from analysis.risk import risk_management
+from analysis.backtest import backtest
 
 print("📈 BullEye AI - RSI + EMA Module")
 
@@ -54,6 +55,7 @@ data["Score"] = data.apply(
 )
 data["AI_Confidence"] = data["Score"].apply(confidence)
 data["Signal"] = data["Score"].apply(generate_signal)
+total, win, loss, rate = backtest(data)
 
 print("\nCandlestick Pattern :", pattern)
 
@@ -93,3 +95,12 @@ print(f"Target 1   : ₹{target1:.2f}")
 print(f"Target 2   : ₹{target2:.2f}")
 
 print(f"Risk/Reward: 1 : {rr}")
+print("\n========== BACKTEST ==========\n")
+
+print(f"Total Trades   : {total}")
+
+print(f"Winning Trades : {win}")
+
+print(f"Losing Trades  : {loss}")
+
+print(f"Win Rate       : {rate}%")
