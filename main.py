@@ -9,13 +9,16 @@ from indicators.trend import detect_trend
 from indicators.support_resistance import support_resistance
 from analysis.volume import volume_analysis
 from analysis.risk import risk_management
+from analysis.position_sizing import position_size
 from analysis.backtest import backtest
 from indicators.atr import calculate_atr
 from ai.decision import ai_decision
 
-print("📈 BullEye AI - RSI + EMA Module")
+print("=" * 55)
+print("📈 BullEye AI v0.3 - AI Stock Analysis Platform")
+print("=" * 55)
 
-stock = input("Enter NSE Stock Symbol (e.g. RELIANCE.NS): ").strip().upper()
+stock = input("\nEnter NSE Stock Symbol (Default: RELIANCE.NS): ").strip().upper()
 
 if not stock:
     stock = "RELIANCE.NS"
@@ -44,6 +47,15 @@ entry, stop_loss, target1, target2, rr = risk_management(
     data["Support"].iloc[-1],
     data["Resistance"].iloc[-1]
 )
+capital = 100000      # Total Capital
+risk_percent = 2      # Risk per Trade
+
+qty, investment, max_risk, risk_per_share = position_size(
+    capital,
+    risk_percent,
+    entry,
+    stop_loss
+)
 pattern = detect_pattern(data)
 scores = data.apply(
     lambda row: calculate_score(
@@ -70,28 +82,23 @@ verdict, strength, recommendation = ai_decision(
 )
 total, win, loss, rate = backtest(data)
 
-print("\nCandlestick Pattern :", pattern)
 
-print(
-    data[
-        [
-            "Close",
-            "ATR",
-            "Support",
-            "Resistance",
-            "EMA20",
-            "Trend",
-            "RSI",
-            "MACD",
-            "MACD_Signal",
-            "Histogram",
-            "Score",
-            "AI_Confidence",
-            "Signal",
-            "Reasons"
-        ]
-    ].tail(10)
-)
+print("\n========== LATEST MARKET ANALYSIS ==========\n")
+
+latest = data.iloc[-1]
+
+print(f"Stock            : {stock}")
+print(f"Close Price      : ₹{latest['Close']:.2f}")
+print(f"Trend            : {latest['Trend']}")
+print(f"Candlestick      : {pattern}")
+print(f"RSI              : {latest['RSI']:.2f}")
+print(f"EMA20            : ₹{latest['EMA20']:.2f}")
+print(f"MACD             : {latest['MACD']:.2f}")
+print(f"ATR              : {latest['ATR']:.2f}")
+print(f"AI Score         : {latest['Score']}/100")
+print(f"Confidence       : {latest['AI_Confidence']}")
+print(f"Signal           : {latest['Signal']}")
+print(f"Reasons          : {latest['Reasons']}")
 print("\n========== VOLUME ANALYSIS ==========\n")
 
 print(f"Current Volume : {int(current_volume):,}")
@@ -133,8 +140,18 @@ print(f"Target 2   : ₹{target2:.2f}")
 
 print("\nRecommendation")
 print("-" * 35)
-print(recommendation)
+
+for line in recommendation.split("\n"):
+    print(f"• {line}")
 
 overall_rating = round(data["Score"].iloc[-1] / 10, 1)
 
 print(f"\nOverall Rating : {overall_rating} / 10")
+print("\n========== POSITION SIZING ==========\n")
+
+print(f"Capital           : ₹{capital:,.0f}")
+print(f"Risk Per Trade    : {risk_percent}%")
+print(f"Maximum Risk      : ₹{max_risk:,.2f}")
+print(f"Risk Per Share    : ₹{risk_per_share:.2f}")
+print(f"Recommended Qty   : {qty} Shares")
+print(f"Investment Needed : ₹{investment:,.2f}")
