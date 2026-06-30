@@ -59,6 +59,9 @@ def ai_decision(score, trend, volume_status, atr):
     if atr > 50:
         recommendation += "\n⚠️ High volatility detected."
 
+    elif atr > 25:
+        recommendation += "\n🟡 Moderate volatility."
+
     else:
         recommendation += "\n✅ Volatility is under control."
 
